@@ -234,6 +234,11 @@ function setup!(s::Converged, model, item)
 end
 
 function finished(s::Converged, model, data, i)
+
+    if mod1(i, s.every) != s.every
+        return false
+    end
+
     val = s.f(model)
     if i > 1 && norm(val .- s.lastval) <= s.tol
         true
@@ -265,6 +270,11 @@ function ConvergedTo(f::Function, goal; tol::Number = 1e-6, every::Int = 1)
 end
 Base.show(io::IO, s::ConvergedTo) = print(io, "ConvergedTo($(s.f), $(s.tol), $(s.goal), $(s.every))")
 function finished(strat::ConvergedTo, model, data, i)
+
+    if mod1(i, s.every) != s.every
+        return false
+    end
+
     val = strat.f(model)
     if norm(val - strat.goal) <= strat.tol
         @info("Converged after $i iterations: $val")
